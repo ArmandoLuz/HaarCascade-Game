@@ -4,7 +4,7 @@ import pygame
 from pigeon import Pigeon
 from detection import Detector
 from player import Player
-from hitMecanic import Mecanic
+from mecanic import Mecanic
 
 class Main:
     def __init__(self):
