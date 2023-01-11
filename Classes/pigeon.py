@@ -13,8 +13,8 @@ class Pigeon:
         return self._position
 
     def move(self):
-        xAxis = (np.random.randint(self._position[0] - 20, self._position[0] + 20))
-        yAxis = (np.random.randint(self._position[1] - 20, self._position[1] + 20))
+        xAxis = (np.random.randint(self._position[0] - 5, self._position[0] + 5))
+        yAxis = (np.random.randint(self._position[1] - 5, self._position[1] + 5))
         self._position = [xAxis, yAxis]
         return self.position
 
