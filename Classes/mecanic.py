@@ -9,7 +9,6 @@ class Mecanic:
         if isinstance(pigeon, Pigeon) and isinstance(hand, Detector) and isinstance(player, Player):
             if cls._check_xAxis(pigeon, hand) and cls._check_yAxis(pigeon, hand):
                 player.hit()
-                print("Score: " + str(player.score))
                 pigeon.spawn()
                 return True
             else:
