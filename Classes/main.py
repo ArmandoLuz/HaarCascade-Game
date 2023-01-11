@@ -6,9 +6,10 @@ from detection import Detector
 from player import Player
 from mecanic import Mecanic
 
-class Main:
+class Game:
     def __init__(self):
         pygame.init()
+        self._systemFont = pygame.font.SysFont(pygame.font.get_default_font(), 25)
         self._screenSize = (640, 480)
         self._screen = pygame.display.set_mode(self._screenSize)
         self._pigeon = Pigeon()
@@ -20,12 +21,16 @@ class Main:
         self._pigeon.spawn()
 
         while self._player.isAlive():
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit(0)
+
             status, frame = self._videoCapture.read()
 
             if not status:
                 print("Error: Could not read from camera")
                 sys.exit(1)
-            
+
             statusDetection, frameDetected = self._detector.detect(frame)
 
             if statusDetection:
@@ -40,6 +45,7 @@ class Main:
 
             self._screen.blit(image, (0, 0))
             self._screen.blit(self._pigeon.image, pigeonCoordinates)
+            self._screen.blit(self._get_score(), (0, 0))
 
             self._pigeon.move()
 
@@ -48,8 +54,11 @@ class Main:
         self._videoCapture.release()
         cv2.destroyAllWindows()
 
+    def _get_score(self):
+        return self._systemFont.render("Score: " + str(self._player.score), True, (255, 255, 255))
+
 if __name__ == "__main__":
-    main = Main()
+    main = Game()
     main.run()
 
 
