@@ -49,11 +49,4 @@ class Mecanic:
         else:
             return False
 
-    @classmethod
-    def preprocess_frames(cls, frame):
-        surface = pygame.surfarray.make_surface(frame)
-        image = pygame.transform.rotate(surface, 270)
-        return image
-
-
 
