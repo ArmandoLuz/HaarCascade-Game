@@ -20,41 +20,21 @@ class Game:
         self._framesManager = FramesManager()
 
     def run(self):
-        #O código pode ser melhorado criando um método da classe Game para os ifs de status da detecção
-        #e de checagem do loss.
-        #Além disso, pode ser criado outro método chamado wait quit, que fica esperando o usuário fechar 
-        # o jogo
         Mecanic.spawn_pigeon(self._pigeon)
 
         while self._player.is_alive():
+            self._wait_quit()
             
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit(0)
-
             status, frame = self._videoCapture.read()
+            self._check_video(status)
 
-            if not status:
-                print("Error: Could not read from camera")
-                sys.exit(1)
-
-            statusDetection, frameDetected = self._detector.detect(frame)
-
-            if statusDetection:
-                Mecanic.hit(self._pigeon, self._detector, self._player, self._framesManager)
-            
-            if Mecanic.check_loss(self._framesManager):
-                self._player.loss()
-                self._framesManager.reset()
-                Mecanic.spawn_pigeon(self._pigeon)
-            else:
-                self._framesManager.frameIncrement()
+            self._detector.detect(frame)
+            self._mecanic_manager()
             
             #It is necessary to recalculate the coordinates of the pigeon with respect to the image, because the x axis is inverted
             pigeonCoordinates = (self._screenSize[0] - self._pigeon.position[0], self._pigeon.position[1])
-            Mecanic.redirect_the_pigeon(self._pigeon, self._screenSize)
-
-            self._screen.blit(self._preprocess_frames(frameDetected), (0, 0))
+            
+            self._screen.blit(self._preprocess_frames(self._detector.imageDetected), (0, 0))
             self._screen.blit(self._pigeon.image, pigeonCoordinates)
             self._screen.blit(self._render_text("Score: " + str(self._player.score), (255, 255, 255)), (0, 0))
             self._screen.blit(self._render_text("Helth: " + str(self._player.health), (255, 255, 255)), (0, 25))
@@ -73,8 +53,31 @@ class Game:
 
     def _preprocess_frames(self, frame):
         surface = pygame.surfarray.make_surface(frame)
-        image = pygame.transform.rotate(surface, 270)
-        return image
+        return pygame.transform.rotate(surface, 270)
+    
+    def _mecanic_manager(self):
+        if self._detector.statusDetection:
+            Mecanic.hit(self._pigeon, self._detector, self._player, self._framesManager)
+            
+        if Mecanic.check_loss(self._framesManager):
+            self._player.loss()
+            self._framesManager.reset()
+            Mecanic.spawn_pigeon(self._pigeon)
+        else:
+            self._framesManager.frameIncrement()
+        
+        Mecanic.redirect_the_pigeon(self._pigeon, self._screenSize)
+    
+    def _wait_quit(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(0)
+
+    def _check_video(self, status):
+        if not status:
+            print("Error: Could not read from camera")
+            sys.exit(1)
+
 
 if __name__ == "__main__":
     main = Game()

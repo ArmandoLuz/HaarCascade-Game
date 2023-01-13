@@ -21,23 +21,11 @@ class Pigeon:
     @property
     def image(self):
         return self._image
-    
-    @image.setter
-    def image(self, image):
-        self._image = image
 
     @property
     def position(self):
         return self._position
-    
-    @position.setter
-    def position(self, position):
-        self._position = position
 
     @property
     def dimensions(self):
         return self._dimensions
-    
-    @dimensions.setter
-    def dimensions(self, dimensions):
-        self._dimensions = dimensions

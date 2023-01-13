@@ -22,12 +22,4 @@ class Player:
     @property
     def score(self):
         return self._score
-
-    @health.setter
-    def health(self, health):
-        self._health = health
-    
-    @score.setter
-    def score(self, score):
-        self._score = score
     

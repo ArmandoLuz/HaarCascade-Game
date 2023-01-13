@@ -14,14 +14,10 @@ class FramesManager:
     def nFrames(self):
         return self._nFrames
     
-    @nFrames.setter
-    def nFrames(self, value):
-        self._nFrames = value
-    
     @property
     def limit(self):
         return self._limit
-    
+
     @limit.setter
-    def limit(self, value):
-        self._limit = value
+    def limit(self, limit):
+        self._limit = limit
