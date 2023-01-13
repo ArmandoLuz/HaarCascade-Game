@@ -1,20 +1,16 @@
-from pigeon import Pigeon
-from detection import Detector
-from player import Player
+import pygame
 
 class Mecanic:
     
     @classmethod
-    def hit(cls, pigeon, hand, player):
-        if isinstance(pigeon, Pigeon) and isinstance(hand, Detector) and isinstance(player, Player):
-            if cls._check_xAxis(pigeon, hand) and cls._check_yAxis(pigeon, hand):
-                player.hit()
-                pigeon.spawn()
-                return True
-            else:
-                return False
+    def hit(cls, pigeon, hand, player, frames):
+        if cls._check_xAxis(pigeon, hand) and cls._check_yAxis(pigeon, hand):
+            player.hit()
+            frames.reset()
+            cls.spawn_pigeon(pigeon)
+            return True
         else:
-            print("Error: Invalid type of object")
+            return False
     
     @classmethod
     def _check_xAxis(cls, pigeon, hand):
@@ -32,16 +28,32 @@ class Mecanic:
 
     @classmethod
     def redirect_the_pigeon(cls, pigeon, screenSize):
-        if isinstance(pigeon, Pigeon):
-            if pigeon.position[0] < 0:
-                pigeon.position[0] = screenSize[0]
-            elif pigeon.position[0] > screenSize[0]:
-                pigeon.position[0] = 0
+        if pigeon.position[0] < 0:
+            pigeon.position[0] = screenSize[0]
+        elif pigeon.position[0] > screenSize[0]:
+            pigeon.position[0] = 0
 
-            if pigeon.position[1] < 0:
-                pigeon.position[1] = screenSize[1]
-            elif pigeon.position[1] > screenSize[1]:
-                pigeon.position[1] = 0
+        if pigeon.position[1] < 0:
+            pigeon.position[1] = screenSize[1]
+        elif pigeon.position[1] > screenSize[1]:
+            pigeon.position[1] = 0
+
+    @classmethod
+    def spawn_pigeon(cls, pigeon):
+        pigeon.spawn()
+
+    @classmethod
+    def check_loss(cls, frames):
+        if frames.nFrames >= frames.limit:
+            return True
         else:
-            print("Error: Invalid type of object")
+            return False
+
+    @classmethod
+    def preprocess_frames(cls, frame):
+        surface = pygame.surfarray.make_surface(frame)
+        image = pygame.transform.rotate(surface, 270)
+        return image
+
+
 

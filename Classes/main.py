@@ -39,7 +39,6 @@ class Game:
                 sys.exit(1)
 
             statusDetection, frameDetected = self._detector.detect(frame)
-            image = Mecanic.preprocess_frames(frameDetected)
 
             if statusDetection:
                 Mecanic.hit(self._pigeon, self._detector, self._player, self._framesManager)
@@ -55,7 +54,7 @@ class Game:
             pigeonCoordinates = (self._screenSize[0] - self._pigeon.position[0], self._pigeon.position[1])
             Mecanic.redirect_the_pigeon(self._pigeon, self._screenSize)
 
-            self._screen.blit(image, (0, 0))
+            self._screen.blit(self._preprocess_frames(frameDetected), (0, 0))
             self._screen.blit(self._pigeon.image, pigeonCoordinates)
             self._screen.blit(self._render_text("Score: " + str(self._player.score), (255, 255, 255)), (0, 0))
             self._screen.blit(self._render_text("Helth: " + str(self._player.health), (255, 255, 255)), (0, 25))
@@ -71,6 +70,11 @@ class Game:
 
     def _render_text(self, text, color):
         return self._systemFont.render(text, True, color)
+
+    def _preprocess_frames(self, frame):
+        surface = pygame.surfarray.make_surface(frame)
+        image = pygame.transform.rotate(surface, 270)
+        return image
 
 if __name__ == "__main__":
     main = Game()
