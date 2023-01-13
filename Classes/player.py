@@ -9,10 +9,10 @@ class Player:
     def loss(self):
         self._health -= 10
     
-    def isDead(self):
+    def is_dead(self):
         return True if self._health <= 0 else False
     
-    def isAlive(self):
+    def is_alive(self):
         return True if self._health > 0 else False
     
     @property
