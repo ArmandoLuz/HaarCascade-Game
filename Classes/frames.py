@@ -2,13 +2,17 @@ class FramesManager:
 
     def __init__(self):
         self._nFrames = 0
-        self._limit = 32
+        self._limit = 80
 
     def reset(self):
         self._nFrames = 0
     
     def frameIncrement(self):
         self._nFrames += 1
+
+    def limit_down(self):
+        if self._limit > 8:
+            self._limit -= 8
     
     @property
     def nFrames(self):
@@ -18,6 +22,4 @@ class FramesManager:
     def limit(self):
         return self._limit
 
-    @limit.setter
-    def limit(self, limit):
-        self._limit = limit
+
