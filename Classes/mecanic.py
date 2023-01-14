@@ -52,6 +52,7 @@ class Mecanic:
     @classmethod
     def level_up(self, player):
         if player.score >= player.level * 10:
+            player.level += 1
             return True
         else:
             return False
