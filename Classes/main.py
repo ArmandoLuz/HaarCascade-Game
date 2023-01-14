@@ -18,13 +18,48 @@ class Game:
         self._player = Player()
         self._videoCapture = cv2.VideoCapture(0)
         self._framesManager = FramesManager()
+        self._background = pygame.image.load("../Assets/background.png")
 
     def run(self):
+        self.menu()
+
+    def menu(self):
+        show_options = True
+        counter = 0
+
+        while counter <= 128:
+            self._get_option()
+            self._screen.blit(self._background, (0, 0))
+            if counter == 128:
+                counter = 0
+                show_options = not show_options
+            else:
+                counter += 1
+                
+            if show_options:
+                self._screen.blit(self._render_text(
+                    "Press Space to start", 
+                    (255, 255, 255)), 
+                    (int(self._screenSize[0]/2) - 60, int(self._screenSize[1]/2) + 130))
+                self._screen.blit(self._render_text(
+                    "Press A to about", 
+                    (255, 255, 255)), 
+                    (int(self._screenSize[0]/2) - 45, int(self._screenSize[1]/2) + 150))
+                
+                self._screen.blit(
+                    self._render_text("Last Score: " + str(self._player.score), 
+                    (255, 255, 255)), 
+                    (int(self._screenSize[0]/2) - 28, int(self._screenSize[1]/2) + 170)
+                    )
+
+            pygame.display.update()
+    
+    def start(self):
+        self._player.reset()
         Mecanic.spawn_pigeon(self._pigeon)
 
         while self._player.is_alive():
             self._wait_quit()
-            
             status, frame = self._videoCapture.read()
             self._check_video(status)
 
@@ -38,18 +73,24 @@ class Game:
             self._screen.blit(self._pigeon.image, pigeonCoordinates)
             self._screen.blit(self._render_text("Score: " + str(self._player.score), (255, 255, 255)), (0, 0))
             self._screen.blit(self._render_text("Helth: " + str(self._player.health), (255, 255, 255)), (0, 25))
+            self._screen.blit(self._render_text("Level: " + str(self._player.level), (255, 255, 255)), (0, 50))
 
             self._pigeon.move()
 
             pygame.display.update()
         
-        self._videoCapture.release()
-        cv2.destroyAllWindows()
+        self.menu()
 
-        print("You Lose")
+    def about(self):
+        print("About")
 
     def _render_text(self, text, color):
         return self._systemFont.render(text, True, color)
+    
+    def _wait_quit(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(0)
 
     def _preprocess_frames(self, frame):
         surface = pygame.surfarray.make_surface(frame)
@@ -58,6 +99,9 @@ class Game:
     def _mecanic_manager(self):
         if self._detector.statusDetection:
             Mecanic.hit(self._pigeon, self._detector, self._player, self._framesManager)
+
+        if Mecanic.level_up(self._player):
+            self._framesManager.limit_down()
             
         if Mecanic.check_loss(self._framesManager):
             self._player.loss()
@@ -67,17 +111,21 @@ class Game:
             self._framesManager.frameIncrement()
         
         Mecanic.redirect_the_pigeon(self._pigeon, self._screenSize)
-    
-    def _wait_quit(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit(0)
 
     def _check_video(self, status):
         if not status:
             print("Error: Could not read from camera")
             sys.exit(1)
 
+    def _get_option(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(0)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.start()
+                elif event.key == pygame.K_a:
+                    self.about()
 
 if __name__ == "__main__":
     main = Game()
